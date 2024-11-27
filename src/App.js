@@ -6,7 +6,7 @@ function App() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const apiUrl = 'https://backend-3s7r.onrender.com/clips';
+        const apiUrl = 'https://backend-3s7r.onrender.com/clips'; // Remplacez par votre URL backend
         console.log('URL utilisée pour la requête:', apiUrl);
 
         axios
@@ -32,7 +32,7 @@ function App() {
                         <div key={clip.id} style={{ marginBottom: '20px' }}>
                             <h3>{clip.title}</h3>
                             <iframe
-                                src={clip.embed_url}
+                                src={`${clip.embed_url}&parent=basilelgr.github.io`} // Ajout du paramètre parent avec le domaine de votre application
                                 frameBorder="0"
                                 allowFullScreen
                                 title={clip.id}
