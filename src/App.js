@@ -7,7 +7,7 @@ function App() {
 
   useEffect(() => {
     axios
-        .get('https://backend-3s7r.onrender.com/clips') // Remplace <TON_BACKEND_URL> par l'URL de ton backend
+        .get('https://backend-3s7r.onrender.com') // Remplace <TON_BACKEND_URL> par l'URL de ton backend
         .then((response) => {
           setClips(response.data.data);
         })
