@@ -5,19 +5,24 @@ function App() {
   const [clips, setClips] = useState([]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    axios
-        .get('https://backend-3s7r.onrender.com/clips') // Remplace <TON_BACKEND_URL> par l'URL de ton backend
-        .then((response) => {
-          setClips(response.data.data);
-        })
-        .catch((err) => {
-          console.error('Erreur lors de la récupération des clips:', err);
-          setError('Impossible de récupérer les clips pour le moment.');
-        });
-  }, []);
+    useEffect(() => {
+        const apiUrl = 'https://backend-3s7r.onrender.com/clips';
+        console.log('URL utilisée pour la requête:', apiUrl);
 
-  return (
+        axios
+            .get(apiUrl)
+            .then((response) => {
+                console.log('Réponse reçue:', response.data);
+                setClips(response.data.data);
+            })
+            .catch((err) => {
+                console.error('Erreur lors de la récupération des clips:', err);
+                setError('Impossible de récupérer les clips pour le moment.');
+            });
+    }, []);
+
+
+    return (
       <div>
         <h1>Clips Twitch</h1>
         {error ? (
