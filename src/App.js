@@ -6,7 +6,7 @@ function App() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const apiUrl = 'https://backend-3s7r.onrender.com/clips'; // Remplacez par votre URL backend
+        const apiUrl = 'https://backend-3s7r.onrender.com/clips'; // Votre backend
         console.log('URL utilisée pour la requête:', apiUrl);
 
         axios
