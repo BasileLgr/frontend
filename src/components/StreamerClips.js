@@ -1,74 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function StreamerClips({ username, gameName }) {
+function StreamerClips({ username }) {
     const [clips, setClips] = useState([]);
     const [error, setError] = useState(null);
-    const [duration, setDuration] = useState('7J'); // Durée par défaut
+    const [gameName, setGameName] = useState('');
+    const [duration, setDuration] = useState('7J');
 
     useEffect(() => {
-        const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${encodeURIComponent(gameName)}&duration=${duration}`;
+        const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${gameName}&duration=${duration}`;
+        console.log(`URL utilisée pour ${username}:`, apiUrl);
+
         axios
             .get(apiUrl)
-            .then((response) => setClips(response.data.data))
-            .catch(() => setError('Impossible de récupérer les clips pour le moment.'));
+            .then((response) => {
+                console.log('Réponse reçue:', response.data);
+                setClips(response.data.data);
+            })
+            .catch((err) => {
+                console.error(`Erreur lors de la récupération des clips pour ${username}:`, err);
+                setError('Impossible de récupérer les clips pour le moment.');
+            });
     }, [username, gameName, duration]);
 
-    const downloadClip = (clipUrl, title) => {
-        const downloadLink = document.createElement('a');
-        downloadLink.href = clipUrl;
-        downloadLink.download = `${title}.mp4`;
-        downloadLink.click();
-    };
-
     const styles = {
-        container: {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
-        },
         clipCard: {
+            display: 'inline-block',
+            width: '30%',
+            margin: '10px',
             border: '1px solid #ddd',
             borderRadius: '10px',
-            padding: '15px',
+            padding: '10px',
             boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
         },
-        clipTitle: {
-            fontSize: '16px',
-            marginBottom: '10px',
-        },
         iframe: {
-            borderRadius: '10px',
             width: '100%',
             height: '200px',
-            marginBottom: '10px',
-        },
-        button: {
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            padding: '10px 15px',
-            borderRadius: '5px',
-            cursor: 'pointer',
         },
     };
 
     return (
         <div>
-            <h2>Clips de {username} sur {gameName}</h2>
-            <select value={duration} onChange={(e) => setDuration(e.target.value)}>
-                <option value="24h">24 heures</option>
-                <option value="7J">7 jours</option>
-                <option value="30J">30 jours</option>
-                <option value="All">Tous</option>
-            </select>
+            <h2>Clips de {username}</h2>
+
+            <div>
+                <label>
+                    Filtre par catégorie :
+                    <select value={gameName} onChange={(e) => setGameName(e.target.value)}>
+                        <option value="">Toutes</option>
+                        <option value="Garry's Mod">Garry's Mod</option>
+                        <option value="Just Chatting">Discussions</option>
+                    </select>
+                </label>
+
+                <label>
+                    Durée :
+                    <select value={duration} onChange={(e) => setDuration(e.target.value)}>
+                        <option value="24h">Dernières 24h</option>
+                        <option value="7J">7 jours</option>
+                        <option value="30J">30 jours</option>
+                        <option value="all">Tout</option>
+                    </select>
+                </label>
+            </div>
+
             {error ? (
                 <p style={{ color: 'red' }}>{error}</p>
             ) : (
-                <div style={styles.container}>
+                <div>
                     {clips.map((clip) => (
                         <div key={clip.id} style={styles.clipCard}>
-                            <h3 style={styles.clipTitle}>{clip.title}</h3>
+                            <h3>{clip.title}</h3>
                             <iframe
                                 src={clip.embed_url}
                                 frameBorder="0"
@@ -76,12 +78,6 @@ function StreamerClips({ username, gameName }) {
                                 title={clip.id}
                                 style={styles.iframe}
                             ></iframe>
-                            <button
-                                style={styles.button}
-                                onClick={() => downloadClip(clip.thumbnail_url.replace('-preview-480x272.jpg', '.mp4'), clip.title)}
-                            >
-                                Télécharger
-                            </button>
                         </div>
                     ))}
                 </div>
