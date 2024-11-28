@@ -1,3 +1,6 @@
+import React, { useState, useEffect } from 'react'; // Importer les hooks nécessaires
+import axios from 'axios';
+
 function StreamerClips({ username }) {
     const [clips, setClips] = useState([]);
     const [error, setError] = useState(null);
