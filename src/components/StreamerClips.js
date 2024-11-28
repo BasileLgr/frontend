@@ -1,25 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function StreamerClips({ username }) {
+function StreamerClips({ username, gameName }) {
     const [clips, setClips] = useState([]);
     const [error, setError] = useState(null);
+    const [duration, setDuration] = useState('7J'); // Durée par défaut
 
     useEffect(() => {
-        const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}`;
-        console.log(`URL utilisée pour ${username}:`, apiUrl);
-
+        const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${encodeURIComponent(gameName)}&duration=${duration}`;
         axios
             .get(apiUrl)
-            .then((response) => {
-                console.log('Réponse reçue:', response.data);
-                setClips(response.data.data);
-            })
-            .catch((err) => {
-                console.error(`Erreur lors de la récupération des clips pour ${username}:`, err);
-                setError('Impossible de récupérer les clips pour le moment.');
-            });
-    }, [username]);
+            .then((response) => setClips(response.data.data))
+            .catch(() => setError('Impossible de récupérer les clips pour le moment.'));
+    }, [username, gameName, duration]);
 
     const downloadClip = (clipUrl, title) => {
         const downloadLink = document.createElement('a');
@@ -29,40 +22,50 @@ function StreamerClips({ username }) {
     };
 
     const styles = {
+        container: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '20px',
+        },
         clipCard: {
             border: '1px solid #ddd',
             borderRadius: '10px',
-            marginBottom: '20px',
             padding: '15px',
             boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
         },
         clipTitle: {
-            fontSize: '18px',
+            fontSize: '16px',
             marginBottom: '10px',
-            color: '#333',
+        },
+        iframe: {
+            borderRadius: '10px',
+            width: '100%',
+            height: '200px',
+            marginBottom: '10px',
         },
         button: {
             backgroundColor: '#4CAF50',
             color: 'white',
             border: 'none',
-            borderRadius: '5px',
             padding: '10px 15px',
+            borderRadius: '5px',
             cursor: 'pointer',
-            marginTop: '10px',
-        },
-        iframe: {
-            borderRadius: '10px',
-            marginBottom: '10px',
         },
     };
 
     return (
         <div>
-            <h2>Clips de {username}</h2>
+            <h2>Clips de {username} sur {gameName}</h2>
+            <select value={duration} onChange={(e) => setDuration(e.target.value)}>
+                <option value="24h">24 heures</option>
+                <option value="7J">7 jours</option>
+                <option value="30J">30 jours</option>
+                <option value="All">Tous</option>
+            </select>
             {error ? (
                 <p style={{ color: 'red' }}>{error}</p>
             ) : (
-                <div>
+                <div style={styles.container}>
                     {clips.map((clip) => (
                         <div key={clip.id} style={styles.clipCard}>
                             <h3 style={styles.clipTitle}>{clip.title}</h3>
@@ -71,15 +74,13 @@ function StreamerClips({ username }) {
                                 frameBorder="0"
                                 allowFullScreen
                                 title={clip.id}
-                                width="100%"
-                                height="360"
                                 style={styles.iframe}
                             ></iframe>
                             <button
                                 style={styles.button}
                                 onClick={() => downloadClip(clip.thumbnail_url.replace('-preview-480x272.jpg', '.mp4'), clip.title)}
                             >
-                                Télécharger le clip
+                                Télécharger
                             </button>
                         </div>
                     ))}
