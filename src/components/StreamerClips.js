@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // Importer les hooks nécessaires
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function StreamerClips({ username }) {
@@ -28,6 +28,16 @@ function StreamerClips({ username }) {
         setCursor(null);
         loadClips();
     }, [username, gameName, duration]);
+
+    const downloadClip = (clip) => {
+        const downloadUrl = clip.thumbnail_url.replace(/-preview-\d+x\d+\.jpg$/, '.mp4');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = downloadUrl;
+        downloadLink.download = `${clip.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
 
     const styles = {
         clipGrid: {
@@ -116,16 +126,5 @@ function StreamerClips({ username }) {
         </div>
     );
 }
-
-const downloadClip = (clip) => {
-    const downloadUrl = clip.video_url; // Utilise l'URL vidéo corrigée du backend
-    const downloadLink = document.createElement('a');
-    downloadLink.href = downloadUrl;
-    downloadLink.download = `${clip.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-};
-
 
 export default StreamerClips;
