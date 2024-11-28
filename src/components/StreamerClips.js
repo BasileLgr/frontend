@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-
 function StreamerClips({ username }) {
     const [clips, setClips] = useState([]);
     const [error, setError] = useState(null);
     const [gameName, setGameName] = useState('');
     const [duration, setDuration] = useState('7J');
-    const [offset, setOffset] = useState(null);
+    const [cursor, setCursor] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const loadClips = async () => {
         setLoading(true);
         try {
-            const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${gameName}&duration=${duration}&limit=10&offset=${offset}`;
+            const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${gameName}&duration=${duration}&limit=12&cursor=${cursor}`;
             const response = await axios.get(apiUrl);
             setClips((prev) => [...prev, ...response.data.data]);
-            setOffset(response.data.pagination?.cursor || null);
+            setCursor(response.data.pagination?.cursor || null);
         } catch {
             setError('Impossible de récupérer les clips pour le moment.');
         } finally {
@@ -25,19 +22,9 @@ function StreamerClips({ username }) {
 
     useEffect(() => {
         setClips([]);
-        setOffset(null);
+        setCursor(null);
         loadClips();
     }, [username, gameName, duration]);
-
-    const downloadClip = (clipUrl, clipTitle) => {
-        const downloadUrl = clipUrl.replace('-preview-480x272.jpg', '.mp4');
-        const downloadLink = document.createElement('a');
-        downloadLink.href = downloadUrl;
-        downloadLink.download = `${clipTitle.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    };
 
     const styles = {
         clipGrid: {
@@ -108,7 +95,7 @@ function StreamerClips({ username }) {
                             ></iframe>
                             <button
                                 style={styles.downloadButton}
-                                onClick={() => downloadClip(clip.thumbnail_url, clip.title)}
+                                onClick={() => downloadClip(clip)}
                             >
                                 Télécharger
                             </button>
@@ -117,7 +104,7 @@ function StreamerClips({ username }) {
                 </div>
             )}
 
-            {offset && !loading && (
+            {cursor && !loading && (
                 <button onClick={loadClips} style={styles.downloadButton}>
                     Charger plus
                 </button>
@@ -126,5 +113,16 @@ function StreamerClips({ username }) {
         </div>
     );
 }
+
+const downloadClip = (clip) => {
+    const downloadUrl = clip.video_url; // Utilise l'URL vidéo corrigée du backend
+    const downloadLink = document.createElement('a');
+    downloadLink.href = downloadUrl;
+    downloadLink.download = `${clip.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+};
+
 
 export default StreamerClips;
