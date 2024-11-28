@@ -6,17 +6,27 @@ function StreamerClips({ username }) {
     const [error, setError] = useState(null);
     const [gameName, setGameName] = useState('');
     const [duration, setDuration] = useState('7J');
+    const [offset, setOffset] = useState(0);
+    const [loading, setLoading] = useState(false);
+
+    const loadClips = async () => {
+        setLoading(true);
+        const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${gameName}&duration=${duration}&limit=10&offset=${offset}`;
+        try {
+            const response = await axios.get(apiUrl);
+            setClips((prev) => [...prev, ...response.data.data]); // Ajouter les nouveaux clips
+            setOffset((prev) => prev + 10); // Incrémenter l'offset
+        } catch {
+            setError('Impossible de récupérer les clips pour le moment.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${gameName}&duration=${duration}`;
-        axios
-            .get(apiUrl)
-            .then((response) => {
-                setClips(response.data.data);
-            })
-            .catch(() => {
-                setError('Impossible de récupérer les clips pour le moment.');
-            });
+        setClips([]); // Réinitialiser les clips lors du changement de filtre
+        setOffset(0);
+        loadClips();
     }, [username, gameName, duration]);
 
     const downloadClip = (clipUrl, clipTitle) => {
@@ -106,6 +116,13 @@ function StreamerClips({ username }) {
                     ))}
                 </div>
             )}
+
+            {!loading && (
+                <button onClick={loadClips} style={styles.downloadButton}>
+                    Charger plus
+                </button>
+            )}
+            {loading && <p>Chargement...</p>}
         </div>
     );
 }
