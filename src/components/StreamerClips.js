@@ -30,14 +30,14 @@ function StreamerClips({ username }) {
     }, [username, gameName, duration]);
 
     const downloadClip = (clip) => {
-        const downloadUrl = clip.thumbnail_url.replace(/-preview-\d+x\d+\.jpg$/, '.mp4');
         const downloadLink = document.createElement('a');
-        downloadLink.href = downloadUrl;
+        downloadLink.href = clip.download_url; // Utilisez `download_url` du backend
         downloadLink.download = `${clip.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
     };
+
 
     const styles = {
         clipGrid: {
