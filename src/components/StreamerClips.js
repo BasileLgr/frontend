@@ -9,28 +9,27 @@ function StreamerClips({ username }) {
 
     useEffect(() => {
         const apiUrl = `https://backend-3s7r.onrender.com/clips?username=${username}&gameName=${gameName}&duration=${duration}`;
-        console.log(`URL utilisée pour ${username}:`, apiUrl);
-
         axios
             .get(apiUrl)
             .then((response) => {
-                console.log('Réponse reçue:', response.data);
                 setClips(response.data.data);
             })
             .catch((err) => {
-                console.error(`Erreur lors de la récupération des clips pour ${username}:`, err);
                 setError('Impossible de récupérer les clips pour le moment.');
             });
     }, [username, gameName, duration]);
 
     const styles = {
+        clipGrid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '20px',
+        },
         clipCard: {
-            display: 'inline-block',
-            width: '30%',
-            margin: '10px',
             border: '1px solid #ddd',
             borderRadius: '10px',
             padding: '10px',
+            textAlign: 'center',
             boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
         },
         iframe: {
@@ -45,7 +44,7 @@ function StreamerClips({ username }) {
 
             <div>
                 <label>
-                    Filtre par catégorie :
+                    Catégorie :
                     <select value={gameName} onChange={(e) => setGameName(e.target.value)}>
                         <option value="">Toutes</option>
                         <option value="Garry's Mod">Garry's Mod</option>
@@ -59,7 +58,7 @@ function StreamerClips({ username }) {
                         <option value="24h">Dernières 24h</option>
                         <option value="7J">7 jours</option>
                         <option value="30J">30 jours</option>
-                        <option value="all">Tout</option>
+                        <option value="All">Tout</option>
                     </select>
                 </label>
             </div>
@@ -67,7 +66,7 @@ function StreamerClips({ username }) {
             {error ? (
                 <p style={{ color: 'red' }}>{error}</p>
             ) : (
-                <div>
+                <div style={styles.clipGrid}>
                     {clips.map((clip) => (
                         <div key={clip.id} style={styles.clipCard}>
                             <h3>{clip.title}</h3>
