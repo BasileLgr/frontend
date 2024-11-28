@@ -29,14 +29,15 @@ function StreamerClips({ username }) {
         loadClips();
     }, [username, gameName, duration]);
 
-    const downloadClip = (clip) => {
+    const downloadClip = (downloadUrl, clipTitle) => {
         const downloadLink = document.createElement('a');
-        downloadLink.href = clip.download_url; // Utilisez `download_url` du backend
-        downloadLink.download = `${clip.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
+        downloadLink.href = downloadUrl; // Utilisez download_url ici.
+        downloadLink.download = `${clipTitle.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`;
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
     };
+
 
 
     const styles = {
@@ -108,10 +109,11 @@ function StreamerClips({ username }) {
                             ></iframe>
                             <button
                                 style={styles.downloadButton}
-                                onClick={() => downloadClip(clip)}
+                                onClick={() => downloadClip(clip.download_url, clip.title)}
                             >
                                 Télécharger
                             </button>
+
                         </div>
                     ))}
                 </div>
