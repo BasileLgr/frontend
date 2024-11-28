@@ -28,7 +28,7 @@ function App() {
                 <Link to="/kameto" style={styles.link}>Kameto</Link>
             </nav>
             <Routes>
-                <Route path="/" element={<h1>Bienvenue sur Goat Basile</h1>} />
+                <Route path="/" element={<h1>Goat Basile</h1>} />
                 <Route path="/qassim" element={<StreamerClips username="qassimiento" />} />
                 <Route path="/tayoh" element={<StreamerClips username="tayoh_" />} />
                 <Route path="/hakai" element={<StreamerClips username="hakaiwrld" />} />

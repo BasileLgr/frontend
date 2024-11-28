@@ -19,6 +19,14 @@ function StreamerClips({ username }) {
             });
     }, [username, gameName, duration]);
 
+    const downloadClip = (clipUrl, title) => {
+        const downloadUrl = clipUrl.replace('-preview-480x272.jpg', '.mp4');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = downloadUrl;
+        downloadLink.download = `${title}.mp4`;
+        downloadLink.click();
+    };
+
     const styles = {
         clipGrid: {
             display: 'grid',
@@ -35,6 +43,15 @@ function StreamerClips({ username }) {
         iframe: {
             width: '100%',
             height: '200px',
+        },
+        downloadButton: {
+            marginTop: '10px',
+            padding: '8px 12px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
         },
     };
 
@@ -77,6 +94,12 @@ function StreamerClips({ username }) {
                                 title={clip.id}
                                 style={styles.iframe}
                             ></iframe>
+                            <button
+                                style={styles.downloadButton}
+                                onClick={() => downloadClip(clip.thumbnail_url, clip.title)}
+                            >
+                                Télécharger
+                            </button>
                         </div>
                     ))}
                 </div>
